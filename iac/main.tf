@@ -13,31 +13,16 @@ terraform {
   }
 }
 
-# LambdaDynamoCalculo IAM Role
-
-resource "aws_iam_role" "lambda_dynamo" {
-  name = var.lambda_dynamo_role_name
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Principal = {
-        Service = "lambda.amazonaws.com"
-      }
-      Action = "sts:AssumeRole"
-    }]
-  })
-}
-
-resource "aws_iam_policy" "lambda_dynamo_policy" {
-  name = "${var.lambda_dynamo_role_name}Policy"
+# 2.1 Crear política IAM para Lambda con acceso a DynamoDB
+resource "aws_iam_policy" "lambda_custom_policy" {
+  name = "calculotiempos-lambda-custom-policy"
 
   policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Action = [
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
         "lambda:InvokeFunction",
         "logs:CreateLogGroup",
         "logs:CreateLogStream",
@@ -51,51 +36,26 @@ resource "aws_iam_policy" "lambda_dynamo_policy" {
         "dynamodb:PutItem",
         "dynamodb:GetItem",
         "dynamodb:Query"
-      ]
-      Resource = var.dynamodb_table_arn
-    }]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_dynamo_attach" {
-  role       = aws_iam_role.lambda_dynamo.name
-  policy_arn = aws_iam_policy.lambda_dynamo_policy.arn
-}
-
-
-# ScheduleLambda IAM Role
-
-resource "aws_iam_role" "schedule_lambda" {
-  name = var.schedule_lambda_role_name
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Principal = {
-        Service = "scheduler.amazonaws.com"
+        ],
+        Resource = "*"
       }
-      Action = "sts:AssumeRole"
-    }]
+    ]
   })
 }
 
-resource "aws_iam_policy" "schedule_lambda_policy" {
-  name = "${var.schedule_lambda_role_name}Policy"
+# 2.2 Role lambda IAM
+module "lambda_iam_role" {
+  source    = "./modules/lambda_iam_role"
+  role_name = "calculotiempo_lambda_dynamo_role"
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Action = [
-        "lambda:InvokeFunction"
-      ]
-      Resource = var.lambda_function_arn
-    }]
-  })
+  additional_policy_arns = {
+    custom_policy = aws_iam_policy.lambda_custom_policy.arn
+  }
 }
 
-resource "aws_iam_role_policy_attachment" "schedule_lambda_attach" {
-  role       = aws_iam_role.schedule_lambda.name
-  policy_arn = aws_iam_policy.schedule_lambda_policy.arn
+# 7. Crear Rol para EventBridge Scheduler
+module "scheduler_role" {
+  source     = "./modules/scheduler_role"
+  role_name  = "eventbridge-calcularTiempo-role"
+  lambda_arn = module.PAW_lambdaCalculoTiempo.function_arn
 }
