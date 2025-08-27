@@ -1,0 +1,52 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_environment:
+        description: "Escribe EXACTAMENTE 'prod' para confirmar que quieres destruir el entorno de producción"
+        required: true
+        default: 'NO'
+        type: string
+
+jobs:
+  terraform_destroy:
+    runs-on: ubuntu-latest
+    environment: Production
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - name: Salir si no se confirma el entorno
+        if: ${{ github.event.inputs.confirm_environment != 'prod' }}
+        run: |
+          echo "No se ha confirmado correctamente el entorno. Escribe 'prod' para continuar con el destroy."
+          exit 1
+
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Instalar Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.8.2
+
+      - name: Zip Lambda Function PAW_lambdaCalculoTiempo
+        run: zip -j terraform/PAW_lambdaCalculoTiempo.zip lambda/calcularTiempo/PAW_lambdaCalculoTiempo/index.py
+      
+      - name: Zip Lambda Function PAW_lambdaCalculoTiempoByID
+        run: zip -j terraform/PAW_lambdaCalculoTiempoByID.zip lambda/calcularTiempo/PAW_lambdaCalculoTiempoByID/index.py
+      
+      - name: Zip Lambda Function PAW_lambdaObtenerCalculoTiempo
+        run: zip -j terraform/PAW_lambdaObtenerCalculoTiempo.zip lambda/obtenerTiempo/PAW_lambdaObtenerCalculoTiempo/index.py
+
+      - name: Verificar ZIPs generados
+        run: ls -lh terraform/
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
+        working-directory: terraform
