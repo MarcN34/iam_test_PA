@@ -3,7 +3,7 @@ variable "aws_region" {
   type        = string
   default     = "us-east-1"
 }
-variable "scheduler_role_arn" {
-  type        = string
-  description = "ARN del rol que EventBridge usa para invocar Lambdas"
-}
+#variable "scheduler_role_arn" {
+#  type        = string
+#  description = "ARN del rol que EventBridge usa para invocar Lambdas"
+#}
