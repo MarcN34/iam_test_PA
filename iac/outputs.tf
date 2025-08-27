@@ -17,7 +17,7 @@ output "lambda_dynamo_role_arn" {
   value       = aws_iam_role.lambda_dynamo.arn
 }
 
-output "schedule_lambda_role_arn" {
-  description = "ARN of the Schedule Lambda role"
-  value       = aws_iam_role.schedule_lambda.arn
-}
+# "schedule_lambda_role_arn" {
+#  description = "ARN of the Schedule Lambda role"
+#  value       = aws_iam_role.schedule_lambda.arn
+#}
