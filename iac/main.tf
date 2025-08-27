@@ -23,19 +23,19 @@ resource "aws_iam_policy" "lambda_custom_policy" {
       {
         Effect = "Allow",
         Action = [
-        "lambda:InvokeFunction",
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents",
-        "dynamodb:DescribeStream",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
-        "dynamodb:ListStreams",
-        "dynamodb:Scan",
-        "dynamodb:UpdateItem",
-        "dynamodb:PutItem",
-        "dynamodb:GetItem",
-        "dynamodb:Query"
+          "lambda:InvokeFunction",
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "dynamodb:DescribeStream",
+          "dynamodb:GetRecords",
+          "dynamodb:GetShardIterator",
+          "dynamodb:ListStreams",
+          "dynamodb:Scan",
+          "dynamodb:UpdateItem",
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:Query"
         ],
         Resource = "*"
       }
@@ -54,8 +54,8 @@ module "lambda_iam_role" {
 }
 
 # 7. Crear Rol para EventBridge Scheduler
-module "scheduler_role" {
-  source     = "./modules/scheduler_role"
-  role_name  = "eventbridge-calcularTiempo-role"
-  lambda_arn = module.PAW_lambdaCalculoTiempo.function_arn
-}
+#module "scheduler_role" {
+#  source     = "./modules/scheduler_role"
+#  role_name  = "eventbridge-calcularTiempo-role"
+#  lambda_arn = module.PAW_lambdaCalculoTiempo.function_arn
+#}
