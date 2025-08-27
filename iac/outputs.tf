@@ -12,3 +12,12 @@
 #  description = "ARN de la policy personalizada TiempoColas"
 #  value       = aws_iam_policy.tiempocolas_policy.arn
 #}
+output "lambda_dynamo_role_arn" {
+  description = "ARN of the Lambda DynamoDB role"
+  value       = aws_iam_role.lambda_dynamo.arn
+}
+
+output "schedule_lambda_role_arn" {
+  description = "ARN of the Schedule Lambda role"
+  value       = aws_iam_role.schedule_lambda.arn
+}
