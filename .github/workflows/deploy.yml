@@ -22,18 +22,18 @@ jobs:
 
       - name: Terraform Init
         run: terraform init -input=false
-        working-directory: terraform
+        working-directory: iac
 
       - name: Terraform fmt & validate
-        working-directory: terraform
+        working-directory: iac
         run: |
           terraform fmt -check
           terraform validate
 
       - name: Terraform Plan
         run: terraform plan -input=false
-        working-directory: terraform
+        working-directory: iac
 
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false
-        working-directory: terraform
+        working-directory: iac
