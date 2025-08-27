@@ -26,3 +26,7 @@ resource "aws_iam_role_policy" "lambda_invoke" {
     }]
   })
 }
+resource "aws_iam_role_policy_attachment" "attach_invoke_lambda" {
+  role       = aws_iam_role.scheduler_role.name
+  policy_arn = aws_iam_policy.invoke_lambda_policy[0].arn
+}
